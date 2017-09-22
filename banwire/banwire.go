@@ -3,9 +3,7 @@ package main
 import (
 	"fmt"
 	"entidades"
-	"accesodatos"
-	"time"
-	"github.com/satori/go.uuid"
+	"negocio"
 )
 
 type TransaccionLocal struct{
@@ -14,10 +12,8 @@ type TransaccionLocal struct{
 
 func main(){
 	var tran entidades.Transaccion
-	tran.Id=uuid.NewV4().String()
 	tran.Autorizacion=10
 	tran.Monto=25.1
-	tran.Fecha=time.Now()
 	tran.Terminal="aaaaaaaaaaaaaaaa"
 	tran.Servicio="bbbbbbbbbbbbbb"
 	tran.Suscripcion="cccccccccccc"
@@ -27,8 +23,8 @@ func main(){
 	conn.Pass="gestion"
 	conn.Database="banwire_gestion"
 
-	var dao *accesodatos.TransaccionDAO
-	dao=accesodatos.NewTransaccionDAO(&conn)
+	var bd *negocio.TransaccionBD
+	bd=negocio.NewTransaccionBD(&conn)
 
 	
 	//fmt.Printf("Probando: %d \n", accesodatos.RecuperaNumeroRegistrosTransaccion())
@@ -47,7 +43,13 @@ func main(){
 //	res=dao.ActualizaRegistro(&tranAct)
 //	fmt.Printf("Actualizo: %v\n", res)
 
-	res2:=dao.RecuperaRegistros(nil)
+	res2:=bd.RecuperaTransacciones(nil)
 	fmt.Printf("Registros: %v\n", len(res2))
-	fmt.Printf("Registros: %v\n", res2)
+	//fmt.Printf("Registros: %v\n", res2)
+
+	res:=bd.RecuperaTransaccion("dasdasds")
+	fmt.Printf("Registro: %v\n", res)
+
+	res3:=bd.AgregaTransaccion(&tran)
+	fmt.Printf("Agrego: %v\n", res3)
 }
