@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"entidades"
 	"negocio"
+	"accesodatos"
+	"time"
 )
 
 type TransaccionLocal struct{
@@ -11,7 +13,7 @@ type TransaccionLocal struct{
 }
 
 func main(){
-	var conn entidades.ConexionBD
+	var conn accesodatos.ConexionBD
 	conn.User="gestion"
 	conn.Pass="gestion"
 	conn.Database="banwire_gestion"
@@ -32,11 +34,28 @@ func main(){
 
 	bd:=negocio.NewSuscripcionBD(&conn)*/
 	
-	var ent entidades.Plan
+/*	var ent entidades.Plan
 	ent.Nombre="plan XXXX"
 	ent.Comercio="bbbbbbbbbbbbbb"
 
-	bd:=negocio.NewPlanBD(&conn)
+	bd:=negocio.NewPlanBD(&conn)*/
+	
+	var ent entidades.Tarjeta
+	ent.Digitos="0477"
+	ent.Bine=30
+	ent.Marca="Alguna"
+	ent.Emisor="XXX"
+	ent.Vigencia=time.Now()
+	ent.Token="SANOASJASDO"
+	ent.UltimoCobro=300.23
+	ent.Creacion=time.Now()
+	ent.Pais="MX"
+	ent.TipoTarjeta="bbbbbbbbbbbbbb"
+	ent.Cliente="cccccccccccc"
+	ent.Estado="dddddddddd"
+	
+
+	bd:=negocio.NewTarjetaBD(&conn)
 	
 	//fmt.Printf("Probando: %d \n", accesodatos.RecuperaNumeroRegistrosTransaccion())
 
@@ -76,7 +95,7 @@ func main(){
 	fmt.Printf("Agrego: %v\n", res3)*/
 
 
-	res2:=bd.RecuperaPlanes(nil)
+/*	res2:=bd.RecuperaPlanes(nil)
 	fmt.Printf("Registros: %v\n", len(res2))
 	fmt.Printf("Registros: %v\n", res2)
 
@@ -84,5 +103,16 @@ func main(){
 	fmt.Printf("Registro: %v\n", res)
 
 	res3:=bd.AgregaPlan(&ent)
+	fmt.Printf("Agrego: %v\n", res3)*/
+
+
+	res2:=bd.RecuperaTarjetas(nil)
+	fmt.Printf("Registros: %v\n", len(res2))
+	fmt.Printf("Registros: %v\n", res2)
+
+	res:=bd.RecuperaTarjeta("381a3ced-9bc8-40d6-a044-4dc518d6106b")
+	fmt.Printf("Registro: %v\n", res)
+
+	res3:=bd.AgregaTarjeta(&ent)
 	fmt.Printf("Agrego: %v\n", res3)
 }

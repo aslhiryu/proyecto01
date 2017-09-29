@@ -1,4 +1,4 @@
-//Definicion del negocio para las Planes
+//Definicion del negocio para las Tarjetas
 package negocio
 
 import (
@@ -9,19 +9,19 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-//Estrucutra que representa un BD para Planes
-type PlanBD struct{
+//Estrucutra que representa un BD para Tarjetas
+type TarjetaBD struct{
 	debug			*log.Logger
 	fatal			*log.Logger
-	dao				*accesodatos.PlanDAO
+	dao				*accesodatos.TarjetaDAO
 }
 	
 
-//Metodo que genera un BD de transacciones
-func NewPlanBD(con *accesodatos.ConexionBD) *PlanBD{
-	var obj PlanBD
+//Metodo que genera un BD de tarjetas
+func NewTarjetaBD(con *accesodatos.ConexionBD) *TarjetaBD{
+	var obj TarjetaBD
 
-	obj.dao=accesodatos.NewPlanDAO(con)
+	obj.dao=accesodatos.NewTarjetaDAO(con)
 	obj.debug=log.New(os.Stdout, "DEBUG: ", log.Ldate|log.Ltime|log.Lshortfile)
 	obj.fatal=log.New(os.Stderr, "DEBUG: ", log.Ldate|log.Ltime|log.Lshortfile)
 
@@ -33,18 +33,18 @@ func NewPlanBD(con *accesodatos.ConexionBD) *PlanBD{
 
 
 // Metodos publicos ------------------------------------------------------
-func (bd *PlanBD) RecuperaPlanes(t *entidades.Plan) []entidades.Plan{
+func (bd *TarjetaBD) RecuperaTarjetas(t *entidades.Tarjeta) []entidades.Tarjeta{
 	return bd.dao.RecuperaRegistros(t)
 }
 
-func (bd *PlanBD) RecuperaPlan(id string) entidades.Plan{
+func (bd *TarjetaBD) RecuperaTarjeta(id string) entidades.Tarjeta{
 	return bd.dao.RecuperaRegistroPorId(id)
 }
 
-func (bd *PlanBD) AgregaPlan(t *entidades.Plan) bool{
+func (bd *TarjetaBD) AgregaTarjeta(t *entidades.Tarjeta) bool{
 	//asigna datos pendientes
 	t.Id=uuid.NewV4().String()
 
-	bd.debug.Println("Agrega plan con ID: "+t.Id);
+	bd.debug.Println("Agrega tarjeta con ID: "+t.Id);
 	return bd.dao.InsertaRegistro(t)
 }

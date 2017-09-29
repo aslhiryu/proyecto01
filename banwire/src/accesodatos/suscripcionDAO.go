@@ -4,51 +4,20 @@ package accesodatos
 import (
 	"database/sql"
 	"entidades"
-	"log"
 	"fmt"
-	"os"
-	_ "github.com/lib/pq"
 )
 
 //Estrucutra que representa un DAO para Suscripciones
 type SuscripcionDAO struct{
-	conexion		*entidades.ConexionBD
-	debug			*log.Logger
-	fatal			*log.Logger
-	query			string
-	dbError			error
-	dbConnection	*sql.DB
-	dbStmt			*sql.Stmt
-	dbResult		*sql.Rows
+	*GenericDAO
 }
 
 //Metodo que genera un DAO de Suscripciones
-func NewSuscripcionDAO( con *entidades.ConexionBD) *SuscripcionDAO{
-	var obj SuscripcionDAO
-
-	obj.conexion=con
-	obj.debug=log.New(os.Stdout, "DEBUG: ", log.Ldate|log.Ltime|log.Lshortfile)
-	obj.fatal=log.New(os.Stderr, "DEBUG: ", log.Ldate|log.Ltime|log.Lshortfile)
-
-	return &obj
+func NewSuscripcionDAO( con *ConexionBD) *SuscripcionDAO{
+	return &SuscripcionDAO{NewGenericDAO(con)}
 }
 
 
-
-
-// Metodos privados ------------------------------------------------------
-
-func (dao *SuscripcionDAO) generaConexion(){
-	dbinfo:=fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", dao.conexion.User, dao.conexion.Pass, dao.conexion.Database)
-	dao.dbConnection, dao.dbError=sql.Open("postgres", dbinfo)
-	dao.validaError()
-}
-
-func (dao *SuscripcionDAO) validaError(){
-	if(dao.dbError!=nil){
-		dao.fatal.Printf("Error en la conexion: %s\n", dao.dbError)
-	}
-}
 
 
 

@@ -18,7 +18,7 @@ type SuscripcionBD struct{
 	
 
 //Metodo que genera un BD de transacciones
-func NewSuscripcionBD(con *entidades.ConexionBD) *SuscripcionBD{
+func NewSuscripcionBD(con *accesodatos.ConexionBD) *SuscripcionBD{
 	var obj SuscripcionBD
 
 	obj.dao=accesodatos.NewSuscripcionDAO(con)

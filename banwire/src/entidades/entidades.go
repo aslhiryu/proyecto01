@@ -3,14 +3,6 @@ package entidades
 
 import "time"
 
-//Estructura que representa una conexion a BD
-type ConexionBD struct{
-	User 		string
-	Pass		string
-	Database	string
-	Server		string
-}
-
 //Estructura que representa una Transaccion
 type Transaccion struct{
 	Id 				string
@@ -45,7 +37,7 @@ type Tarjeta struct{
 	Emisor			string
 	Vigencia		time.Time
 	Token			string
-	UltimoCobro		int16
+	UltimoCobro		float64
 	Creacion		time.Time
 	Pais			string
 	TipoTarjeta		string

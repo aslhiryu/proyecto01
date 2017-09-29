@@ -40,6 +40,26 @@ BEGIN
             CONSTRAINT PK_plan PRIMARY KEY(id_plan)
         );
 	END IF;
+
+	IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE tablename='tarjeta')
+	THEN
+        CREATE TABLE tarjeta(
+            id_tarjeta          VARCHAR(36) NOT NULL,
+            digitos             VARCHAR(36) NOT NULL,
+            bine                INT NOT NULL,
+            marca               VARCHAR(30) NOT NULL,
+            emisor              VARCHAR(36) NOT NULL,
+            vigencia            DATE NOT NULL,
+            token               VARCHAR(80) NOT NULL,
+            ultimo_cobro        NUMERIC(11,3) NOT NULL,
+            creacion            TIMESTAMP NOT NULL,
+            pais                VARCHAR(2) NOT NULL,
+            tipo_tarjeta        VARCHAR(36) NOT NULL,
+            cliente             VARCHAR(36) NOT NULL,
+            estado              VARCHAR(36) NOT NULL,
+            CONSTRAINT PK_tarjeta PRIMARY KEY(id_tarjeta)
+        );
+	END IF;
 END;
 $$
 LANGUAGE 'plpgsql';

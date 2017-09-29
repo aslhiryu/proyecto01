@@ -4,51 +4,20 @@ package accesodatos
 import (
 	"database/sql"
 	"entidades"
-	"log"
 	"fmt"
-	"os"
 	_ "github.com/lib/pq"
 )
 
 //Estrucutra que representa un DAO para Planes
 type PlanDAO struct{
-	conexion		*entidades.ConexionBD
-	debug			*log.Logger
-	fatal			*log.Logger
-	query			string
-	dbError			error
-	dbConnection	*sql.DB
-	dbStmt			*sql.Stmt
-	dbResult		*sql.Rows
+	*GenericDAO
 }
 
 //Metodo que genera un DAO de planes
-func NewPlanDAO( con *entidades.ConexionBD) *PlanDAO{
-	var obj PlanDAO
-
-	obj.conexion=con
-	obj.debug=log.New(os.Stdout, "DEBUG: ", log.Ldate|log.Ltime|log.Lshortfile)
-	obj.fatal=log.New(os.Stderr, "DEBUG: ", log.Ldate|log.Ltime|log.Lshortfile)
-
-	return &obj
+func NewPlanDAO( con *ConexionBD) *PlanDAO{
+	return &PlanDAO{NewGenericDAO(con)}
 }
 
-
-
-
-// Metodos privados ------------------------------------------------------
-
-func (dao *PlanDAO) generaConexion(){
-	dbinfo:=fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", dao.conexion.User, dao.conexion.Pass, dao.conexion.Database)
-	dao.dbConnection, dao.dbError=sql.Open("postgres", dbinfo)
-	dao.validaError()
-}
-
-func (dao *PlanDAO) validaError(){
-	if(dao.dbError!=nil){
-		dao.fatal.Printf("Error en la conexion: %s\n", dao.dbError)
-	}
-}
 
 
 

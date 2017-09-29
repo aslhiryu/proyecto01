@@ -19,7 +19,7 @@ type TransaccionBD struct{
 	
 
 //Metodo que genera un BD de transacciones
-func NewTransaccionBD(con *entidades.ConexionBD) *TransaccionBD{
+func NewTransaccionBD(con *accesodatos.ConexionBD) *TransaccionBD{
 	var obj TransaccionBD
 
 	obj.dao=accesodatos.NewTransaccionDAO(con)
