@@ -5,7 +5,7 @@ import (
 	"entidades"
 	"negocio"
 	"accesodatos"
-	"time"
+//	"time"
 )
 
 type TransaccionLocal struct{
@@ -40,7 +40,7 @@ func main(){
 
 	bd:=negocio.NewPlanBD(&conn)*/
 	
-	var ent entidades.Tarjeta
+/*	var ent entidades.Tarjeta
 	ent.Digitos="0477"
 	ent.Bine=30
 	ent.Marca="Alguna"
@@ -54,8 +54,7 @@ func main(){
 	ent.Cliente="cccccccccccc"
 	ent.Estado="dddddddddd"
 	
-
-	bd:=negocio.NewTarjetaBD(&conn)
+	bd:=negocio.NewTarjetaBD(&conn)*/
 	
 	//fmt.Printf("Probando: %d \n", accesodatos.RecuperaNumeroRegistrosTransaccion())
 
@@ -106,13 +105,56 @@ func main(){
 	fmt.Printf("Agrego: %v\n", res3)*/
 
 
-	res2:=bd.RecuperaTarjetas(nil)
+/*	var ent entidades.TipoTarjeta
+	ent.Nombre="Tipo tarjeta 1"
+
+	bd:=negocio.NewTipoTarjetaBD(&conn)
+
+	res2:=bd.RecuperaTiposTarjeta(nil)
 	fmt.Printf("Registros: %v\n", len(res2))
 	fmt.Printf("Registros: %v\n", res2)
 
-	res:=bd.RecuperaTarjeta("381a3ced-9bc8-40d6-a044-4dc518d6106b")
+	res:=bd.RecuperaTipoTarjeta("381a3ced-9bc8-40d6-a044-4dc518d6106b")
 	fmt.Printf("Registro: %v\n", res)
 
-	res3:=bd.AgregaTarjeta(&ent)
+	res3, er:=bd.AgregaTipoTarjeta(&ent)
 	fmt.Printf("Agrego: %v\n", res3)
+	if(er!=nil){
+		fmt.Printf("Error: %v\n", er)
+	}*/
+/*	var ent entidades.Pais
+	ent.Id="MX"
+	ent.Nombre="México"
+
+	bd:=negocio.NewPaisBD(&conn)
+
+	res2:=bd.RecuperaPaises(nil)
+	fmt.Printf("Registros: %v\n", len(res2))
+	fmt.Printf("Registros: %v\n", res2)
+
+	res:=bd.RecuperaPais("MX")
+	fmt.Printf("Registro: %v\n", res)
+
+	res3, er:=bd.AgregaPais(&ent)
+	fmt.Printf("Agrego: %v\n", res3)
+	if(er!=nil){
+		fmt.Printf("Error: %v\n", er)
+	}*/
+	var ent entidades.EstadoTarjeta
+	ent.Nombre="Activa"
+
+	bd:=negocio.NewEstadoTarjetaBD(&conn)
+
+	res2:=bd.RecuperaEstadosTarjeta(nil)
+	fmt.Printf("Registros: %v\n", len(res2))
+	fmt.Printf("Registros: %v\n", res2)
+
+	res:=bd.RecuperaEstadoTarjeta("d55a1381-622c-45bd-924d-75396818bcbe")
+	fmt.Printf("Registro: %v\n", res)
+
+	res3, er:=bd.AgregaEstadoTarjeta(&ent)
+	fmt.Printf("Agrego: %v\n", res3)
+	if(er!=nil){
+		fmt.Printf("Error: %v\n", er)
+	}
 }

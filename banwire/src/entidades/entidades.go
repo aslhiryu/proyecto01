@@ -44,3 +44,21 @@ type Tarjeta struct{
 	Cliente			string
 	Estado			string
 }
+
+//Estructura que representa un Tipo de Tarjeta
+type TipoTarjeta struct{
+	Id				string
+	Nombre			string
+}
+
+//Estructura que representa un Pais
+type Pais struct{
+	Id				string
+	Nombre			string
+}
+
+//Estructura que representa un Pais
+type EstadoTarjeta struct{
+	Id				string
+	Nombre			string
+}
