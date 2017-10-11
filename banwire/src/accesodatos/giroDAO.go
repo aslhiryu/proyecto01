@@ -1,4 +1,4 @@
-//Definicion del DAO para el manejo de Estados de Tarjeta
+//Definicion del DAO para el manejo de Giros
 package accesodatos
 
 import (
@@ -8,14 +8,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
-//Estrucutra que representa un DAO para Estados de Tarjetas
-type EstadoTarjetaDAO struct{
+//Estrucutra que representa un DAO para Giros
+type GiroDAO struct{
 	*GenericDAO
 }
 
-//Metodo que genera un DAO de estado de Tarjeta
-func NewEstadoTarjetaDAO( con *ConexionBD) *EstadoTarjetaDAO{
-	return &EstadoTarjetaDAO{NewGenericDAO(con)}
+//Metodo que genera un DAO de estado de Notificacion
+func NewGiroDAO( con *ConexionBD) *GiroDAO{
+	return &GiroDAO{NewGenericDAO(con)}
 }
 
 
@@ -24,22 +24,22 @@ func NewEstadoTarjetaDAO( con *ConexionBD) *EstadoTarjetaDAO{
 
 // Metodos publicos ------------------------------------------------------
 
-func (dao *EstadoTarjetaDAO) RecuperaRegistros(t *entidades.EstadoTarjeta) []entidades.EstadoTarjeta{
+func (dao *GiroDAO) RecuperaRegistros(t *entidades.Giro) []entidades.Giro{
 	var vals []interface{}
-	var regs []entidades.EstadoTarjeta
-	var obj entidades.EstadoTarjeta
+	var regs []entidades.Giro
+	var obj entidades.Giro
 	pos:=1
 	
-	dao.query="SELECT E.id_estado_tarjeta, E.descripcion, E.activo, E.creador, E.creacion, E.modificador, E.modificacion "+
-		"FROM ctl_estado_tarjeta E "+
+	dao.query="SELECT G.id_giro, G.descripcion, G.activo, G.creador, G.creacion, G.modificador, G.modificacion "+
+		"FROM ctl_giro G "+
 		"WHERE 1=1 "
 
 	if(t!=nil && t.Nombre!=""){
-		dao.query=dao.query+fmt.Sprintf(" AND E.descripcion=$%d", pos)
+		dao.query=dao.query+fmt.Sprintf(" AND G.descripcion=$%d", pos)
 		vals=append(vals, t.Nombre)
 		pos++
 	}
-	dao.debug.Println("Intenta recuperar EstadosTarjeta");
+	dao.debug.Println("Intenta recuperar Giros");
 	
 	//realiza conexion
 	dao.generaConexion();
@@ -62,13 +62,13 @@ func (dao *EstadoTarjetaDAO) RecuperaRegistros(t *entidades.EstadoTarjeta) []ent
 	return regs
 }
 
-func (dao *EstadoTarjetaDAO) RecuperaRegistroPorId(id string) entidades.EstadoTarjeta{
-	var obj entidades.EstadoTarjeta
+func (dao *GiroDAO) RecuperaRegistroPorId(id string) entidades.Giro{
+	var obj entidades.Giro
 
-	dao.query="SELECT E.id_estado_tarjeta, E.descripcion, E.activo, E.creador, E.creacion, E.modificador, E.modificacion "+
-		"FROM ctl_estado_tarjeta E "+
-		"WHERE E.id_estado_tarjeta=$1"
-	dao.debug.Println("Intenta recuperar un EstadoTarjeta por Id");
+	dao.query="SELECT G.id_giro, G.descripcion, G.activo, G.creador, G.creacion, G.modificador, G.modificacion "+
+		"FROM ctl_giro G "+
+		"WHERE G.id_giro=$1"
+	dao.debug.Println("Intenta recuperar un Giro por Id");
 
 	//realiza conexion
 	dao.generaConexion();
@@ -91,14 +91,14 @@ func (dao *EstadoTarjetaDAO) RecuperaRegistroPorId(id string) entidades.EstadoTa
 	return obj
 }
 
-func (dao *EstadoTarjetaDAO) InsertaRegistro(t *entidades.EstadoTarjeta) bool{
+func (dao *GiroDAO) InsertaRegistro(t *entidades.Giro) bool{
 	var resTmp sql.Result
 	var rowsAffected int64
 
-	dao.query="INSERT INTO ctl_estado_tarjeta "+
-		"(id_estado_tarjeta, descripcion, activo, creador, creacion) "+
+	dao.query="INSERT INTO ctl_giro "+
+		"(id_giro, descripcion, activo, creador, creacion) "+
 		"VALUES($1, $2, $3, $4, CURRENT_TIMESTAMP)"
-	dao.debug.Println("Intenta agregar un EstadoTarjeta");
+	dao.debug.Println("Intenta agregar un Giro");
 
 	//realiza conexion
 	dao.generaConexion();
@@ -121,13 +121,13 @@ func (dao *EstadoTarjetaDAO) InsertaRegistro(t *entidades.EstadoTarjeta) bool{
 	}
 }
 
-func  (dao *EstadoTarjetaDAO) ActualizaRegistro(t *entidades.EstadoTarjeta) bool{
+func  (dao *GiroDAO) ActualizaRegistro(t *entidades.Giro) bool{
 	var vals []interface{}
 	var resTmp sql.Result
 	var rowsAffected int64
 	pos:=1
 
-	dao.query="UPDATE ctl_estado_tarjeta "+
+	dao.query="UPDATE ctl_giro "+
 		"SET "
 
 	if(t.Nombre!=""){
@@ -135,9 +135,9 @@ func  (dao *EstadoTarjetaDAO) ActualizaRegistro(t *entidades.EstadoTarjeta) bool
 		vals=append(vals, t.Nombre)
 		pos++
 	}
-	dao.query=dao.query+fmt.Sprintf(" , modificador=$%d, modificacion=CURRENT_TIMESTAMP WHERE id_estado_tarjeta=$%d", pos, pos+1)
+	dao.query=dao.query+fmt.Sprintf(" , modificador=$%d, modificacion=CURRENT_TIMESTAMP WHERE id_giro=$%d", pos, pos+1)
 	vals=append(vals, t.Id)
-	dao.debug.Printf("Intenta actualizar un EstadoTarjeta con %d parametros\n", len(vals));
+	dao.debug.Printf("Intenta actualizar un Giro con %d parametros\n", len(vals));
 	
 	//realiza conexion
 	dao.generaConexion();

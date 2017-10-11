@@ -1,4 +1,4 @@
-//Definicion del DAO para el manejo de Estados de Tarjeta
+//Definicion del DAO para el manejo de Tipos de servicio
 package accesodatos
 
 import (
@@ -8,14 +8,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
-//Estrucutra que representa un DAO para Estados de Tarjetas
-type EstadoTarjetaDAO struct{
+//Estrucutra que representa un DAO para Tipos de Servicio
+type TipoServicioDAO struct{
 	*GenericDAO
 }
 
-//Metodo que genera un DAO de estado de Tarjeta
-func NewEstadoTarjetaDAO( con *ConexionBD) *EstadoTarjetaDAO{
-	return &EstadoTarjetaDAO{NewGenericDAO(con)}
+//Metodo que genera un DAO de estado de Notificacion
+func NewTipoServicioDAO( con *ConexionBD) *TipoServicioDAO{
+	return &TipoServicioDAO{NewGenericDAO(con)}
 }
 
 
@@ -24,22 +24,22 @@ func NewEstadoTarjetaDAO( con *ConexionBD) *EstadoTarjetaDAO{
 
 // Metodos publicos ------------------------------------------------------
 
-func (dao *EstadoTarjetaDAO) RecuperaRegistros(t *entidades.EstadoTarjeta) []entidades.EstadoTarjeta{
+func (dao *TipoServicioDAO) RecuperaRegistros(t *entidades.TipoServicio) []entidades.TipoServicio{
 	var vals []interface{}
-	var regs []entidades.EstadoTarjeta
-	var obj entidades.EstadoTarjeta
+	var regs []entidades.TipoServicio
+	var obj entidades.TipoServicio
 	pos:=1
 	
-	dao.query="SELECT E.id_estado_tarjeta, E.descripcion, E.activo, E.creador, E.creacion, E.modificador, E.modificacion "+
-		"FROM ctl_estado_tarjeta E "+
+	dao.query="SELECT T.id_tipo_servicio, T.descripcion, T.activo, T.creador, T.creacion, T.modificador, T.modificacion "+
+		"FROM ctl_tipo_servicio T "+
 		"WHERE 1=1 "
 
 	if(t!=nil && t.Nombre!=""){
-		dao.query=dao.query+fmt.Sprintf(" AND E.descripcion=$%d", pos)
+		dao.query=dao.query+fmt.Sprintf(" AND T.descripcion=$%d", pos)
 		vals=append(vals, t.Nombre)
 		pos++
 	}
-	dao.debug.Println("Intenta recuperar EstadosTarjeta");
+	dao.debug.Println("Intenta recuperar TiposServicio");
 	
 	//realiza conexion
 	dao.generaConexion();
@@ -62,13 +62,13 @@ func (dao *EstadoTarjetaDAO) RecuperaRegistros(t *entidades.EstadoTarjeta) []ent
 	return regs
 }
 
-func (dao *EstadoTarjetaDAO) RecuperaRegistroPorId(id string) entidades.EstadoTarjeta{
-	var obj entidades.EstadoTarjeta
+func (dao *TipoServicioDAO) RecuperaRegistroPorId(id string) entidades.TipoServicio{
+	var obj entidades.TipoServicio
 
-	dao.query="SELECT E.id_estado_tarjeta, E.descripcion, E.activo, E.creador, E.creacion, E.modificador, E.modificacion "+
-		"FROM ctl_estado_tarjeta E "+
-		"WHERE E.id_estado_tarjeta=$1"
-	dao.debug.Println("Intenta recuperar un EstadoTarjeta por Id");
+	dao.query="SELECT T.id_tipo_servicio, T.descripcion, T.activo, T.creador, T.creacion, T.modificador, T.modificacion "+
+		"FROM ctl_tipo_servicio T "+
+		"WHERE T.id_tipo_servicio=$1"
+	dao.debug.Println("Intenta recuperar un TipoServicio por Id");
 
 	//realiza conexion
 	dao.generaConexion();
@@ -91,14 +91,14 @@ func (dao *EstadoTarjetaDAO) RecuperaRegistroPorId(id string) entidades.EstadoTa
 	return obj
 }
 
-func (dao *EstadoTarjetaDAO) InsertaRegistro(t *entidades.EstadoTarjeta) bool{
+func (dao *TipoServicioDAO) InsertaRegistro(t *entidades.TipoServicio) bool{
 	var resTmp sql.Result
 	var rowsAffected int64
 
-	dao.query="INSERT INTO ctl_estado_tarjeta "+
-		"(id_estado_tarjeta, descripcion, activo, creador, creacion) "+
+	dao.query="INSERT INTO ctl_tipo_servicio "+
+		"(id_tipo_servicio, descripcion, activo, creador, creacion) "+
 		"VALUES($1, $2, $3, $4, CURRENT_TIMESTAMP)"
-	dao.debug.Println("Intenta agregar un EstadoTarjeta");
+	dao.debug.Println("Intenta agregar un TipoServicio");
 
 	//realiza conexion
 	dao.generaConexion();
@@ -121,13 +121,13 @@ func (dao *EstadoTarjetaDAO) InsertaRegistro(t *entidades.EstadoTarjeta) bool{
 	}
 }
 
-func  (dao *EstadoTarjetaDAO) ActualizaRegistro(t *entidades.EstadoTarjeta) bool{
+func  (dao *TipoServicioDAO) ActualizaRegistro(t *entidades.TipoServicio) bool{
 	var vals []interface{}
 	var resTmp sql.Result
 	var rowsAffected int64
 	pos:=1
 
-	dao.query="UPDATE ctl_estado_tarjeta "+
+	dao.query="UPDATE ctl_tipo_servicio "+
 		"SET "
 
 	if(t.Nombre!=""){
@@ -135,9 +135,9 @@ func  (dao *EstadoTarjetaDAO) ActualizaRegistro(t *entidades.EstadoTarjeta) bool
 		vals=append(vals, t.Nombre)
 		pos++
 	}
-	dao.query=dao.query+fmt.Sprintf(" , modificador=$%d, modificacion=CURRENT_TIMESTAMP WHERE id_estado_tarjeta=$%d", pos, pos+1)
+	dao.query=dao.query+fmt.Sprintf(" , modificador=$%d, modificacion=CURRENT_TIMESTAMP WHERE id_tipo_servicio=$%d", pos, pos+1)
 	vals=append(vals, t.Id)
-	dao.debug.Printf("Intenta actualizar un EstadoTarjeta con %d parametros\n", len(vals));
+	dao.debug.Printf("Intenta actualizar un TipoServicio con %d parametros\n", len(vals));
 	
 	//realiza conexion
 	dao.generaConexion();

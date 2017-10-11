@@ -6,7 +6,6 @@ import (
 	"entidades"
 	"fmt"
 	_ "github.com/lib/pq"
-	"time"
 )
 
 //Estrucutra que representa un DAO para Tarjetas
@@ -14,7 +13,7 @@ type TarjetaDAO struct{
 	*GenericDAO
 }
 
-//Metodo que genera un DAO de tarjetas
+//Metodo que genera un DAO de estado de Notificacion
 func NewTarjetaDAO( con *ConexionBD) *TarjetaDAO{
 	return &TarjetaDAO{NewGenericDAO(con)}
 }
@@ -31,18 +30,21 @@ func (dao *TarjetaDAO) RecuperaRegistros(t *entidades.Tarjeta) []entidades.Tarje
 	var obj entidades.Tarjeta
 	pos:=1
 	
-	dao.query="SELECT id_tarjeta, digitos, bine, marca, emisor, vigencia, token, ultimo_cobro, creacion, pais, tipo_tarjeta, cliente, estado "+
-		"FROM tarjeta "+
+	dao.query="SELECT T.id_tarjeta, T.codigo_autorizacion, T.tarejtahabiente, T.id_tipo_tarjeta, T.id_emisor_tarjeta, T.mail_usuario, T.digitos, T.bin, T.vigencia, T.marca, T.id_pais, T.ultimo_cargo, T.cvv, T.token, T.id_estado_tarjeta, T.creador, T.creacion, T.modificador, T.modificacion, "+
+		"TT.descripcion desc_tipo_tarjeta, "
+		"ET.nombre desc_emisor_tarjeta, "
+		"P.nombre pais, "
+		"ST.descripcion desc_estado_tarjeta "
+		"LEFT JOIN ctl_tipo_tarjeta TT ON T.id_tipo_tarjeta=TT.id_tipo_tarjeta "
+		"LEFT JOIN ctl_emisor_tarjeta ET ON T.id_emisor_tarjeta=ET.id_emisor_tarjeta "
+		"LEFT JOIN ctl_pais P ON T.id_pais=P.id_pais "
+		"LEFT JOIN ctl_estado_tarjeta ST ON T.id_estado_tarjeta=ET.id_estado_tarjeta "
+		"FROM tarjeta T "+
 		"WHERE 1=1 "
 
-	if(t!=nil && t.TipoTarjeta!=""){
-		dao.query=dao.query+fmt.Sprintf(" AND id_tipo_tarjeta=$%d", pos)
-		vals=append(vals, t.TipoTarjeta)
-		pos++
-	}
-	if(t!=nil && t.Cliente!=""){
-		dao.query=dao.query+fmt.Sprintf(" AND cliente=$%d", pos)
-		vals=append(vals, t.Cliente)
+	if(t!=nil && t.Digitos!=""){
+		dao.query=dao.query+fmt.Sprintf(" AND T.digitos=$%d", pos)
+		vals=append(vals, t.Digitos)
 		pos++
 	}
 	dao.debug.Println("Intenta recuperar Tarjetas");
@@ -58,7 +60,7 @@ func (dao *TarjetaDAO) RecuperaRegistros(t *entidades.Tarjeta) []entidades.Tarje
 	dao.dbResult, dao.dbError=dao.dbStmt.Query(vals...)
 	dao.validaError()
 	for dao.dbResult.Next() {
-		dao.dbError=dao.dbResult.Scan(&obj.Id, &obj.Digitos, &obj.Bine, &obj.Marca, &obj.Emisor, &obj.Vigencia, &obj.Token, &obj.UltimoCobro, &obj.Creacion, &obj.Pais, &obj.TipoTarjeta, &obj.Cliente, &obj.Estado)
+		dao.dbError=dao.dbResult.Scan(&obj.Id, &obj.CodigoAutorizacion, &obj.Tarjetahabiente, &obj.Tipo.Id, &obj.Emisor.Id, &obj.MailUsuario, &obj.Digitos, &obj.Bin, &obj.Vencimiento, &obj.Marca, &obj.Pais.Id, &obj.UltimoCobro, &obj.Cvv, &obj.Token, &obj.Estatus.Id, &obj.Creador.Id, &obj.Creacion, &obj.Modificador.Id, &obj.Modificacion, &obj.Tipo.Nombre, &obj.Emisor.Nombre, &obj.Pais.Nombre, &obj.Estatus.Nombre)
 		regs=append(regs, obj)
 		dao.validaError()
 	}
@@ -71,10 +73,18 @@ func (dao *TarjetaDAO) RecuperaRegistros(t *entidades.Tarjeta) []entidades.Tarje
 func (dao *TarjetaDAO) RecuperaRegistroPorId(id string) entidades.Tarjeta{
 	var obj entidades.Tarjeta
 
-	dao.query="SELECT id_tarjeta, digitos, bine, marca, emisor, vigencia, token, ultimo_cobro, creacion, pais, tipo_tarjeta, cliente, estado "+
-		"FROM tarjeta "+
-		"WHERE id_tarjeta=$1"
-	dao.debug.Println("Intenta recuperar una Tarjeta por Id");
+	dao.query="SELECT T.id_tarjeta, T.codigo_autorizacion, T.tarejtahabiente, T.id_tipo_tarjeta, T.id_emisor_tarjeta, T.mail_usuario, T.digitos, T.bin, T.vigencia, T.marca, T.id_pais, T.ultimo_cargo, T.cvv, T.token, T.id_estado_tarjeta, T.creador, T.creacion, T.modificador, T.modificacion, "+
+		"TT.descripcion desc_tipo_tarjeta, "
+		"ET.nombre desc_emisor_tarjeta, "
+		"P.nombre pais, "
+		"ST.descripcion desc_estado_tarjeta "
+		"LEFT JOIN ctl_tipo_tarjeta TT ON T.id_tipo_tarjeta=TT.id_tipo_tarjeta "
+		"LEFT JOIN ctl_emisor_tarjeta ET ON T.id_emisor_tarjeta=ET.id_emisor_tarjeta "
+		"LEFT JOIN ctl_pais P ON T.id_pais=P.id_pais "
+		"LEFT JOIN ctl_estado_tarjeta ST ON T.id_estado_tarjeta=ET.id_estado_tarjeta "
+		"FROM tarjeta T "+
+		"WHERE T.id_tarjeta=$1"
+	dao.debug.Println("Intenta recuperar un Tarjeta por Id");
 
 	//realiza conexion
 	dao.generaConexion();
@@ -88,7 +98,7 @@ func (dao *TarjetaDAO) RecuperaRegistroPorId(id string) entidades.Tarjeta{
 	dao.validaError()
 
 	if dao.dbResult.Next() {
-		dao.dbError=dao.dbResult.Scan(&obj.Id, &obj.Digitos, &obj.Bine, &obj.Marca, &obj.Emisor, &obj.Vigencia, &obj.Token, &obj.UltimoCobro, &obj.Creacion, &obj.Pais, &obj.TipoTarjeta, &obj.Cliente, &obj.Estado)
+		dao.dbError=dao.dbResult.Scan(&obj.Id, &obj.CodigoAutorizacion, &obj.Tarjetahabiente, &obj.Tipo.Id, &obj.Emisor.Id, &obj.MailUsuario, &obj.Digitos, &obj.Bin, &obj.Vencimiento, &obj.Marca, &obj.Pais.Id, &obj.UltimoCobro, &obj.Cvv, &obj.Token, &obj.Estatus.Id, &obj.Creador.Id, &obj.Creacion, &obj.Modificador.Id, &obj.Modificacion, &obj.Tipo.Nombre, &obj.Emisor.Nombre, &obj.Pais.Nombre, &obj.Estatus.Nombre)
 		dao.validaError()
 	}
 	dao.dbError=dao.dbResult.Err()
@@ -102,8 +112,8 @@ func (dao *TarjetaDAO) InsertaRegistro(t *entidades.Tarjeta) bool{
 	var rowsAffected int64
 
 	dao.query="INSERT INTO tarjeta "+
-		"(id_tarjeta, digitos, bine, marca, emisor, vigencia, token, ultimo_cobro, creacion, pais, tipo_tarjeta, cliente, estado) "+
-		"VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)"
+		"(id_tarjeta, codigo_autorizacion, tarejtahabiente, id_tipo_tarjeta, id_emisor_tarjeta, mail_usuario, digitos, bin, vigencia, marca, id_pais, ultimo_cargo, cvv, token, id_estado_tarjeta, creador, creacion) "+
+		"VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, CURRENT_TIMESTAMP)"
 	dao.debug.Println("Intenta agregar un Tarjeta");
 
 	//realiza conexion
@@ -114,7 +124,7 @@ func (dao *TarjetaDAO) InsertaRegistro(t *entidades.Tarjeta) bool{
 	dao.debug.Println("Ejecuta el query: "+dao.query);
 	dao.dbStmt, dao.dbError=dao.dbConnection.Prepare(dao.query)
 	dao.validaError()
-	resTmp, dao.dbError=dao.dbStmt.Exec(t.Id, t.Digitos, t.Bine, t.Marca, t.Emisor, t.Vigencia, t.Token, t.UltimoCobro, t.Creacion, t.Pais, t.TipoTarjeta, t.Cliente, t.Estado)
+	resTmp, dao.dbError=dao.dbStmt.Exec(t.Id, t.CodigoAutorizacion, t.Tarjetahabiente, t.Tipo.Id, t.Emisor.Id, t.MailUsuario, t.Digitos, t.Bin, t.Vencimiento, t.Marca, t.Pais.Id, t.UltimoCobro, t.Cvv, t.Token, t.Estatus.Id, t.Creador.Id)
 	dao.validaError()
 	rowsAffected, dao.dbError=resTmp.RowsAffected()
 	dao.validaError()
@@ -136,78 +146,14 @@ func  (dao *TarjetaDAO) ActualizaRegistro(t *entidades.Tarjeta) bool{
 	dao.query="UPDATE tarjeta "+
 		"SET "
 
-	if(t.Bine>0){
-		dao.query=dao.query+fmt.Sprintf("bine=$%d", pos)
-		vals=append(vals, t.Bine)
+	if(t.Digitos!=""){
+		dao.query=dao.query+fmt.Sprintf("digitos=$%d", pos)
+		vals=append(vals, t.Digitos)
 		pos++
 	}
-	if(t.Marca!=""){
-		if(pos>1){
-			dao.query=dao.query+", "
-		}
-		dao.query=dao.query+fmt.Sprintf("marca=$%d", pos)
-		vals=append(vals, t.Marca)
-		pos++
-	}
-	if(t.Emisor!=""){
-		if(pos>1){
-			dao.query=dao.query+", "
-		}
-		dao.query=dao.query+fmt.Sprintf("emisor=$%d", pos)
-		vals=append(vals, t.Emisor)
-		pos++
-	}
-	if(!time.Time.IsZero(t.Vigencia)){
-		if(pos>1){
-			dao.query=dao.query+", "
-		}
-		dao.query=dao.query+fmt.Sprintf("vigencia=$%d", pos)
-		vals=append(vals, t.Vigencia)
-		pos++
-	}
-	if(t.Token!=""){
-		if(pos>1){
-			dao.query=dao.query+", "
-		}
-		dao.query=dao.query+fmt.Sprintf("token=$%d", pos)
-		vals=append(vals, t.Token)
-		pos++
-	}
-	if(t.UltimoCobro>0){
-		if(pos>1){
-			dao.query=dao.query+", "
-		}
-		dao.query=dao.query+fmt.Sprintf("ultimo_cobro=$%d", pos)
-		vals=append(vals, t.UltimoCobro)
-		pos++
-	}
-	if(t.TipoTarjeta!=""){
-		if(pos>1){
-			dao.query=dao.query+", "
-		}
-		dao.query=dao.query+fmt.Sprintf("tipo_tarjeta=$%d", pos)
-		vals=append(vals, t.TipoTarjeta)
-		pos++
-	}
-	if(t.Cliente!=""){
-		if(pos>1){
-			dao.query=dao.query+", "
-		}
-		dao.query=dao.query+fmt.Sprintf("cliente=$%d", pos)
-		vals=append(vals, t.Cliente)
-		pos++
-	}
-	if(t.Estado!=""){
-		if(pos>1){
-			dao.query=dao.query+", "
-		}
-		dao.query=dao.query+fmt.Sprintf("estado=$%d", pos)
-		vals=append(vals, t.Estado)
-		pos++
-	}
-	dao.query=dao.query+fmt.Sprintf(" WHERE id_tarjeta=$%d", pos)
+	dao.query=dao.query+fmt.Sprintf(" , modificador=$%d, modificacion=CURRENT_TIMESTAMP WHERE id_tarjeta=$%d", pos, pos+1)
 	vals=append(vals, t.Id)
-	dao.debug.Printf("Intenta actualizar una Tarjeta con %d parametros\n", len(vals));
+	dao.debug.Printf("Intenta actualizar un Tarjeta con %d parametros\n", len(vals));
 	
 	//realiza conexion
 	dao.generaConexion();

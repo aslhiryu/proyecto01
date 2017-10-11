@@ -10,7 +10,7 @@ type Transaccion struct{
 	Fecha				time.Time
 	Autorizacion 		string
 	Digitos				string   ///validar si no es de la tarjeta
-	Bin 				string
+	Bin 				string	///validar si no es de la tarjeta
 	Monto				float64	
 	Estatus				EstadoTransaccion
 	Concepto			string
@@ -22,7 +22,7 @@ type Transaccion struct{
 	Tarjeta 			Tarjeta
 	Movimiento 			TipoMovimiento
 	Iso 				TipoISO
-	EstadoNotificacion 	EstadoNotificacion
+	EstadoNotificacion 	EstadoNotificacion  //VALIDAR SI NO SE LIGA CON UNA NOTIFICACION
 	NumeroTicket		string
 	ComercialAsignado 	string	//que es?
 }

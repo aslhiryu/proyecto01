@@ -1,4 +1,4 @@
-//Definicion del DAO para el manejo de Planes
+//Definicion del DAO para el manejo de Tipos de ISO
 package accesodatos
 
 import (
@@ -8,14 +8,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
-//Estrucutra que representa un DAO para Planes
-type PlanDAO struct{
+//Estrucutra que representa un DAO para Tipos de ISO
+type TipoIsoDAO struct{
 	*GenericDAO
 }
 
-//Metodo que genera un DAO de planes
-func NewPlanDAO( con *ConexionBD) *PlanDAO{
-	return &PlanDAO{NewGenericDAO(con)}
+//Metodo que genera un DAO de estado de Notificacion
+func NewTipoIsoDAO( con *ConexionBD) *TipoIsoDAO{
+	return &TipoIsoDAO{NewGenericDAO(con)}
 }
 
 
@@ -24,22 +24,22 @@ func NewPlanDAO( con *ConexionBD) *PlanDAO{
 
 // Metodos publicos ------------------------------------------------------
 
-func (dao *PlanDAO) RecuperaRegistros(t *entidades.Plan) []entidades.Plan{
+func (dao *TipoIsoDAO) RecuperaRegistros(t *entidades.TipoIso) []entidades.TipoIso{
 	var vals []interface{}
-	var regs []entidades.Plan
-	var obj entidades.Plan
+	var regs []entidades.TipoIso
+	var obj entidades.TipoIso
 	pos:=1
 	
-	dao.query="SELECT id_plan, nombre, id_comercio "+
-		"FROM plan "+
+	dao.query="SELECT T.id_tipo_iso, T.descripcion, T.activo, T.creador, T.creacion, T.modificador, T.modificacion "+
+		"FROM ctl_tipo_iso T "+
 		"WHERE 1=1 "
 
-	if(t!=nil && t.Comercio!=""){
-		dao.query=dao.query+fmt.Sprintf(" AND id_comercio=$%d", pos)
-		vals=append(vals, t.Comercio)
+	if(t!=nil && t.Nombre!=""){
+		dao.query=dao.query+fmt.Sprintf(" AND T.descripcion=$%d", pos)
+		vals=append(vals, t.Nombre)
 		pos++
 	}
-	dao.debug.Println("Intenta recuperar Planes");
+	dao.debug.Println("Intenta recuperar TiposIso");
 	
 	//realiza conexion
 	dao.generaConexion();
@@ -52,7 +52,7 @@ func (dao *PlanDAO) RecuperaRegistros(t *entidades.Plan) []entidades.Plan{
 	dao.dbResult, dao.dbError=dao.dbStmt.Query(vals...)
 	dao.validaError()
 	for dao.dbResult.Next() {
-		dao.dbError=dao.dbResult.Scan(&obj.Id, &obj.Nombre, &obj.Comercio)
+		dao.dbError=dao.dbResult.Scan(&obj.Id, &obj.Nombre, &obj.Activo, &obj.Creador.Id, &obj.Creacion, &obj.Modificador.Id, &obj.Modificacion)
 		regs=append(regs, obj)
 		dao.validaError()
 	}
@@ -62,13 +62,13 @@ func (dao *PlanDAO) RecuperaRegistros(t *entidades.Plan) []entidades.Plan{
 	return regs
 }
 
-func (dao *PlanDAO) RecuperaRegistroPorId(id string) entidades.Plan{
-	var obj entidades.Plan
+func (dao *TipoIsoDAO) RecuperaRegistroPorId(id string) entidades.TipoIso{
+	var obj entidades.TipoIso
 
-	dao.query="SELECT id_plan, nombre, id_comercio "+
-		"FROM plan "+
-		"WHERE id_plan=$1"
-	dao.debug.Println("Intenta recuperar una Plan por Id");
+	dao.query="SELECT T.id_tipo_iso, T.descripcion, T.activo, T.creador, T.creacion, T.modificador, T.modificacion "+
+		"FROM ctl_tipo_iso T "+
+		"WHERE T.id_tipo_iso=$1"
+	dao.debug.Println("Intenta recuperar un TipoIso por Id");
 
 	//realiza conexion
 	dao.generaConexion();
@@ -82,7 +82,7 @@ func (dao *PlanDAO) RecuperaRegistroPorId(id string) entidades.Plan{
 	dao.validaError()
 
 	if dao.dbResult.Next() {
-		dao.dbError=dao.dbResult.Scan(&obj.Id, &obj.Nombre, &obj.Comercio)
+		dao.dbError=dao.dbResult.Scan(&obj.Id, &obj.Nombre, &obj.Activo, &obj.Creador.Id, &obj.Creacion, &obj.Modificador.Id, &obj.Modificacion)
 		dao.validaError()
 	}
 	dao.dbError=dao.dbResult.Err()
@@ -91,14 +91,14 @@ func (dao *PlanDAO) RecuperaRegistroPorId(id string) entidades.Plan{
 	return obj
 }
 
-func (dao *PlanDAO) InsertaRegistro(t *entidades.Plan) bool{
+func (dao *TipoIsoDAO) InsertaRegistro(t *entidades.TipoIso) bool{
 	var resTmp sql.Result
 	var rowsAffected int64
 
-	dao.query="INSERT INTO plan "+
-		"(id_plan, nombre, id_comercio) "+
-		"VALUES($1, $2, $3)"
-	dao.debug.Println("Intenta agregar un Plan");
+	dao.query="INSERT INTO ctl_tipo_iso "+
+		"(id_tipo_iso, descripcion, activo, creador, creacion) "+
+		"VALUES($1, $2, $3, $4, CURRENT_TIMESTAMP)"
+	dao.debug.Println("Intenta agregar un TipoIso");
 
 	//realiza conexion
 	dao.generaConexion();
@@ -108,7 +108,7 @@ func (dao *PlanDAO) InsertaRegistro(t *entidades.Plan) bool{
 	dao.debug.Println("Ejecuta el query: "+dao.query);
 	dao.dbStmt, dao.dbError=dao.dbConnection.Prepare(dao.query)
 	dao.validaError()
-	resTmp, dao.dbError=dao.dbStmt.Exec(t.Id, t.Nombre, t.Comercio)
+	resTmp, dao.dbError=dao.dbStmt.Exec(t.Id, t.Nombre, t.Activo, T.Creador.Id)
 	dao.validaError()
 	rowsAffected, dao.dbError=resTmp.RowsAffected()
 	dao.validaError()
@@ -121,31 +121,23 @@ func (dao *PlanDAO) InsertaRegistro(t *entidades.Plan) bool{
 	}
 }
 
-func  (dao *PlanDAO) ActualizaRegistro(t *entidades.Plan) bool{
+func  (dao *TipoIsoDAO) ActualizaRegistro(t *entidades.TipoIso) bool{
 	var vals []interface{}
 	var resTmp sql.Result
 	var rowsAffected int64
 	pos:=1
 
-	dao.query="UPDATE plan "+
+	dao.query="UPDATE ctl_tipo_iso "+
 		"SET "
 
 	if(t.Nombre!=""){
-		dao.query=dao.query+fmt.Sprintf("nombre=$%d", pos)
+		dao.query=dao.query+fmt.Sprintf("descripcion=$%d", pos)
 		vals=append(vals, t.Nombre)
 		pos++
 	}
-	if(t.Comercio!=""){
-		if(pos>1){
-			dao.query=dao.query+", "
-		}
-		dao.query=dao.query+fmt.Sprintf("id_comercio=$%d", pos)
-		vals=append(vals, t.Comercio)
-		pos++
-	}
-	dao.query=dao.query+fmt.Sprintf(" WHERE id_plan=$%d", pos)
+	dao.query=dao.query+fmt.Sprintf(" , modificador=$%d, modificacion=CURRENT_TIMESTAMP WHERE id_tipo_iso=$%d", pos, pos+1)
 	vals=append(vals, t.Id)
-	dao.debug.Printf("Intenta actualizar una Plan con %d parametros\n", len(vals));
+	dao.debug.Printf("Intenta actualizar un TipoIso con %d parametros\n", len(vals));
 	
 	//realiza conexion
 	dao.generaConexion();

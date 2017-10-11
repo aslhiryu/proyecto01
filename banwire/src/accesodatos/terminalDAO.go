@@ -1,22 +1,22 @@
-//Definicion del DAO para el manejo de Suscripciones
+//Definicion del DAO para el manejo de Terminales
 package accesodatos
 
 import (
 	"database/sql"
 	"entidades"
 	"fmt"
+	_ "github.com/lib/pq"
 )
 
-//Estrucutra que representa un DAO para Suscripciones
-type SuscripcionDAO struct{
+//Estrucutra que representa un DAO para Estados de Notificacion
+type TerminalDAO struct{
 	*GenericDAO
 }
 
-//Metodo que genera un DAO de Suscripciones
-func NewSuscripcionDAO( con *ConexionBD) *SuscripcionDAO{
-	return &SuscripcionDAO{NewGenericDAO(con)}
+//Metodo que genera un DAO de estado de Notificacion
+func NewTerminalDAO( con *ConexionBD) *TerminalDAO{
+	return &TerminalDAO{NewGenericDAO(con)}
 }
-
 
 
 
@@ -24,27 +24,22 @@ func NewSuscripcionDAO( con *ConexionBD) *SuscripcionDAO{
 
 // Metodos publicos ------------------------------------------------------
 
-func (dao *SuscripcionDAO) RecuperaRegistros(t *entidades.Suscripcion) []entidades.Suscripcion{
+func (dao *TerminalDAO) RecuperaRegistros(t *entidades.Terminal) []entidades.Terminal{
 	var vals []interface{}
-	var regs []entidades.Suscripcion
-	var obj entidades.Suscripcion
+	var regs []entidades.Terminal
+	var obj entidades.Terminal
 	pos:=1
 	
-	dao.query="SELECT id_suscripcion, id_plan, id_tarjeta "+
-		"FROM suscripcion "+
+	dao.query="SELECT T.id_terminal, T.descripcion, T.activo, T.creador, T.creacion, T.modificador, T.modificacion "+
+		"FROM terminal T "+
 		"WHERE 1=1 "
 
-	if(t!=nil && t.Plan!=""){
-		dao.query=dao.query+fmt.Sprintf(" AND id_plan=$%d", pos)
-		vals=append(vals, t.Plan)
+	if(t!=nil && t.Nombre!=""){
+		dao.query=dao.query+fmt.Sprintf(" AND T.descripcion=$%d", pos)
+		vals=append(vals, t.Nombre)
 		pos++
 	}
-	if(t!=nil && t.Tarjeta!=""){
-		dao.query=dao.query+fmt.Sprintf(" AND id_tarjeta=$%d", pos)
-		vals=append(vals, t.Tarjeta)
-		pos++
-	}
-	dao.debug.Println("Intenta recuperar Suscripciones");
+	dao.debug.Println("Intenta recuperar Terminales");
 	
 	//realiza conexion
 	dao.generaConexion();
@@ -57,7 +52,7 @@ func (dao *SuscripcionDAO) RecuperaRegistros(t *entidades.Suscripcion) []entidad
 	dao.dbResult, dao.dbError=dao.dbStmt.Query(vals...)
 	dao.validaError()
 	for dao.dbResult.Next() {
-		dao.dbError=dao.dbResult.Scan(&obj.Id, &obj.Plan, &obj.Tarjeta)
+		dao.dbError=dao.dbResult.Scan(&obj.Id, &obj.Nombre, &obj.Activo, &obj.Creador.Id, &obj.Creacion, &obj.Modificador.Id, &obj.Modificacion)
 		regs=append(regs, obj)
 		dao.validaError()
 	}
@@ -67,13 +62,13 @@ func (dao *SuscripcionDAO) RecuperaRegistros(t *entidades.Suscripcion) []entidad
 	return regs
 }
 
-func (dao *SuscripcionDAO) RecuperaRegistroPorId(id string) entidades.Suscripcion{
-	var obj entidades.Suscripcion
+func (dao *TerminalDAO) RecuperaRegistroPorId(id string) entidades.Terminal{
+	var obj entidades.Terminal
 
-	dao.query="SELECT id_suscripcion, id_plan, id_tarjeta "+
-		"FROM suscripcion "+
-		"WHERE id_suscripcion=$1"
-	dao.debug.Println("Intenta recuperar una Suscripcion por Id");
+	dao.query="SELECT T.id_terminal, T.descripcion, T.activo, T.creador, T.creacion, T.modificador, T.modificacion "+
+		"FROM terminal T "+
+		"WHERE T.id_terminal=$1"
+	dao.debug.Println("Intenta recuperar un Terminal por Id");
 
 	//realiza conexion
 	dao.generaConexion();
@@ -87,7 +82,7 @@ func (dao *SuscripcionDAO) RecuperaRegistroPorId(id string) entidades.Suscripcio
 	dao.validaError()
 
 	if dao.dbResult.Next() {
-		dao.dbError=dao.dbResult.Scan(&obj.Id, &obj.Plan, &obj.Tarjeta)
+		dao.dbError=dao.dbResult.Scan(&obj.Id, &obj.Nombre, &obj.Activo, &obj.Creador.Id, &obj.Creacion, &obj.Modificador.Id, &obj.Modificacion)
 		dao.validaError()
 	}
 	dao.dbError=dao.dbResult.Err()
@@ -96,14 +91,14 @@ func (dao *SuscripcionDAO) RecuperaRegistroPorId(id string) entidades.Suscripcio
 	return obj
 }
 
-func (dao *SuscripcionDAO) InsertaRegistro(t *entidades.Suscripcion) bool{
+func (dao *TerminalDAO) InsertaRegistro(t *entidades.Terminal) bool{
 	var resTmp sql.Result
 	var rowsAffected int64
 
-	dao.query="INSERT INTO suscripcion "+
-		"(id_suscripcion, id_plan, id_tarjeta) "+
-		"VALUES($1, $2, $3)"
-	dao.debug.Println("Intenta agregar una Suscripcion");
+	dao.query="INSERT INTO terminal "+
+		"(id_terminal, descripcion, activo, creador, creacion) "+
+		"VALUES($1, $2, $3, $4, CURRENT_TIMESTAMP)"
+	dao.debug.Println("Intenta agregar un Terminal");
 
 	//realiza conexion
 	dao.generaConexion();
@@ -113,7 +108,7 @@ func (dao *SuscripcionDAO) InsertaRegistro(t *entidades.Suscripcion) bool{
 	dao.debug.Println("Ejecuta el query: "+dao.query);
 	dao.dbStmt, dao.dbError=dao.dbConnection.Prepare(dao.query)
 	dao.validaError()
-	resTmp, dao.dbError=dao.dbStmt.Exec(t.Id, t.Plan, t.Tarjeta)
+	resTmp, dao.dbError=dao.dbStmt.Exec(t.Id, t.Nombre, t.Activo, T.Creador.Id)
 	dao.validaError()
 	rowsAffected, dao.dbError=resTmp.RowsAffected()
 	dao.validaError()
@@ -126,31 +121,23 @@ func (dao *SuscripcionDAO) InsertaRegistro(t *entidades.Suscripcion) bool{
 	}
 }
 
-func  (dao *SuscripcionDAO) ActualizaRegistro(t *entidades.Suscripcion) bool{
+func  (dao *TerminalDAO) ActualizaRegistro(t *entidades.Terminal) bool{
 	var vals []interface{}
 	var resTmp sql.Result
 	var rowsAffected int64
 	pos:=1
 
-	dao.query="UPDATE suscripcion "+
+	dao.query="UPDATE terminal "+
 		"SET "
 
-	if(t.Plan!=""){
-		dao.query=dao.query+fmt.Sprintf("id_plan=$%d", pos)
-		vals=append(vals, t.Plan)
+	if(t.Nombre!=""){
+		dao.query=dao.query+fmt.Sprintf("descripcion=$%d", pos)
+		vals=append(vals, t.Nombre)
 		pos++
 	}
-	if(t.Tarjeta!=""){
-		if(pos>1){
-			dao.query=dao.query+", "
-		}
-		dao.query=dao.query+fmt.Sprintf("id_tarjeta=$%d", pos)
-		vals=append(vals, t.Tarjeta)
-		pos++
-	}
-	dao.query=dao.query+fmt.Sprintf(" WHERE id_suscripcion=$%d", pos)
+	dao.query=dao.query+fmt.Sprintf(" , modificador=$%d, modificacion=CURRENT_TIMESTAMP WHERE id_terminal=$%d", pos, pos+1)
 	vals=append(vals, t.Id)
-	dao.debug.Printf("Intenta actualizar una Suscripcion con %d parametros\n", len(vals));
+	dao.debug.Printf("Intenta actualizar un Terminal con %d parametros\n", len(vals));
 	
 	//realiza conexion
 	dao.generaConexion();
