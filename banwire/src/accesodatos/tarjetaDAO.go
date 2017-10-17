@@ -30,16 +30,16 @@ func (dao *TarjetaDAO) RecuperaRegistros(t *entidades.Tarjeta) []entidades.Tarje
 	var obj entidades.Tarjeta
 	pos:=1
 	
-	dao.query="SELECT T.id_tarjeta, T.codigo_autorizacion, T.tarejtahabiente, T.id_tipo_tarjeta, T.id_emisor_tarjeta, T.mail_usuario, T.digitos, T.bin, T.vigencia, T.marca, T.id_pais, T.ultimo_cargo, T.cvv, T.token, T.id_estado_tarjeta, T.creador, T.creacion, T.modificador, T.modificacion, "+
-		"TT.descripcion desc_tipo_tarjeta, "
-		"ET.nombre desc_emisor_tarjeta, "
-		"P.nombre pais, "
-		"ST.descripcion desc_estado_tarjeta "
-		"LEFT JOIN ctl_tipo_tarjeta TT ON T.id_tipo_tarjeta=TT.id_tipo_tarjeta "
-		"LEFT JOIN ctl_emisor_tarjeta ET ON T.id_emisor_tarjeta=ET.id_emisor_tarjeta "
-		"LEFT JOIN ctl_pais P ON T.id_pais=P.id_pais "
-		"LEFT JOIN ctl_estado_tarjeta ST ON T.id_estado_tarjeta=ET.id_estado_tarjeta "
+	dao.query="SELECT T.id_tarjeta, T.codigo_autorizacion, T.tarjetahabiente, T.id_tipo_tarjeta, T.id_emisor_tarjeta, T.mail_usuario, T.digitos, T.bin, T.vigencia, T.marca, T.id_pais, T.ultimo_cargo, T.cvv, T.token, T.id_estado_tarjeta, T.creador, T.creacion, T.modificador, T.modificacion, "+
+		"TT.descripcion desc_tipo_tarjeta, "+
+		"ET.nombre desc_emisor_tarjeta, "+
+		"P.nombre pais, "+
+		"ST.descripcion desc_estado_tarjeta "+
 		"FROM tarjeta T "+
+		"LEFT JOIN ctl_tipo_tarjeta TT ON T.id_tipo_tarjeta=TT.id_tipo_tarjeta "+
+		"LEFT JOIN ctl_emisor_tarjeta ET ON T.id_emisor_tarjeta=ET.id_emisor_tarjeta "+
+		"LEFT JOIN ctl_pais P ON T.id_pais=P.id_pais "+
+		"LEFT JOIN ctl_estado_tarjeta ST ON T.id_estado_tarjeta=ET.id_estado_tarjeta "+
 		"WHERE 1=1 "
 
 	if(t!=nil && t.Digitos!=""){
@@ -74,15 +74,15 @@ func (dao *TarjetaDAO) RecuperaRegistroPorId(id string) entidades.Tarjeta{
 	var obj entidades.Tarjeta
 
 	dao.query="SELECT T.id_tarjeta, T.codigo_autorizacion, T.tarejtahabiente, T.id_tipo_tarjeta, T.id_emisor_tarjeta, T.mail_usuario, T.digitos, T.bin, T.vigencia, T.marca, T.id_pais, T.ultimo_cargo, T.cvv, T.token, T.id_estado_tarjeta, T.creador, T.creacion, T.modificador, T.modificacion, "+
-		"TT.descripcion desc_tipo_tarjeta, "
-		"ET.nombre desc_emisor_tarjeta, "
-		"P.nombre pais, "
-		"ST.descripcion desc_estado_tarjeta "
-		"LEFT JOIN ctl_tipo_tarjeta TT ON T.id_tipo_tarjeta=TT.id_tipo_tarjeta "
-		"LEFT JOIN ctl_emisor_tarjeta ET ON T.id_emisor_tarjeta=ET.id_emisor_tarjeta "
-		"LEFT JOIN ctl_pais P ON T.id_pais=P.id_pais "
-		"LEFT JOIN ctl_estado_tarjeta ST ON T.id_estado_tarjeta=ET.id_estado_tarjeta "
+		"TT.descripcion desc_tipo_tarjeta, "+
+		"ET.nombre desc_emisor_tarjeta, "+
+		"P.nombre pais, "+
+		"ST.descripcion desc_estado_tarjeta "+
 		"FROM tarjeta T "+
+		"LEFT JOIN ctl_tipo_tarjeta TT ON T.id_tipo_tarjeta=TT.id_tipo_tarjeta "+
+		"LEFT JOIN ctl_emisor_tarjeta ET ON T.id_emisor_tarjeta=ET.id_emisor_tarjeta "+
+		"LEFT JOIN ctl_pais P ON T.id_pais=P.id_pais "+
+		"LEFT JOIN ctl_estado_tarjeta ST ON T.id_estado_tarjeta=ET.id_estado_tarjeta "+
 		"WHERE T.id_tarjeta=$1"
 	dao.debug.Println("Intenta recuperar un Tarjeta por Id");
 

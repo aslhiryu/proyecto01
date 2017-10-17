@@ -108,7 +108,7 @@ func (dao *EstadoComercioDAO) InsertaRegistro(t *entidades.EstadoComercio) bool{
 	dao.debug.Println("Ejecuta el query: "+dao.query);
 	dao.dbStmt, dao.dbError=dao.dbConnection.Prepare(dao.query)
 	dao.validaError()
-	resTmp, dao.dbError=dao.dbStmt.Exec(t.Id, t.Nombre, t.Activo, T.Creador.Id)
+	resTmp, dao.dbError=dao.dbStmt.Exec(t.Id, t.Nombre, t.Activo, t.Creador.Id)
 	dao.validaError()
 	rowsAffected, dao.dbError=resTmp.RowsAffected()
 	dao.validaError()

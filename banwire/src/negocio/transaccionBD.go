@@ -6,8 +6,8 @@ import (
 	"log"
 	"accesodatos"
 	"os"
-	"time"
-	"github.com/satori/go.uuid"
+//	"time"
+//	"github.com/satori/go.uuid"
 )
 
 //Estrucutra que representa un BD para Transacciones
@@ -34,19 +34,10 @@ func NewTransaccionBD(con *accesodatos.ConexionBD) *TransaccionBD{
 
 
 // Metodos publicos ------------------------------------------------------
-func (bd *TransaccionBD) RecuperaTransacciones(t *entidades.Transaccion) []entidades.Transaccion{
-	return bd.dao.RecuperaRegistros(t)
+func (bd *TransaccionBD) RecuperaTransacciones(t *entidades.Transaccion) ([]entidades.Transaccion, error){
+	return bd.dao.RecuperaRegistros(t), nil
 }
 
-func (bd *TransaccionBD) RecuperaTransaccion(id string) entidades.Transaccion{
-	return bd.dao.RecuperaRegistroPorId(id)
-}
-
-func (bd *TransaccionBD) AgregaTransaccion(t *entidades.Transaccion) bool{
-	//asigna datos pendientes
-	t.Fecha=time.Now()
-	t.Id=uuid.NewV4().String()
-
-	bd.debug.Println("Agrega transaccion con ID: "+t.Id);
-	return bd.dao.InsertaRegistro(t)
+func (bd *TransaccionBD) RecuperaTransaccion(id string) (entidades.Transaccion, error){
+	return bd.dao.RecuperaRegistroPorId(id), nil
 }

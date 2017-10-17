@@ -9,8 +9,6 @@ type Transaccion struct{
 	Id					string
 	Fecha				time.Time
 	Autorizacion 		string
-	Digitos				string   ///validar si no es de la tarjeta
-	Bin 				string	///validar si no es de la tarjeta
 	Monto				float64	
 	Estatus				EstadoTransaccion
 	Concepto			string
@@ -21,7 +19,7 @@ type Transaccion struct{
 	Comercio 			Comercio
 	Tarjeta 			Tarjeta
 	Movimiento 			TipoMovimiento
-	Iso 				TipoISO
+	Iso 				TipoIso
 	EstadoNotificacion 	EstadoNotificacion  //VALIDAR SI NO SE LIGA CON UNA NOTIFICACION
 	NumeroTicket		string
 	ComercialAsignado 	string	//que es?
@@ -72,7 +70,7 @@ type TipoMovimiento struct{
 }
 
 //Estructura que representa un tipo de ISO
-type TipoISO struct{
+type TipoIso struct{
 	Id					string
 	Nombre				string	
 	Activo				bool

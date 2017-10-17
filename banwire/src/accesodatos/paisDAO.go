@@ -2,7 +2,7 @@
 package accesodatos
 
 import (
-	"database/sql"
+//	"database/sql"
 	"entidades"
 	"fmt"
 	_ "github.com/lib/pq"

@@ -9,7 +9,7 @@ type Tarjeta struct{
 	CodigoAutorizacion	string	//Es lo mismo que el codigo de seguridad ???
 	Tarjetahabiente		string
 	Tipo 				TipoTarjeta
-	Emisor				Emisor
+	Emisor				EmisorTarjeta
 	MailUsuario			string
 	Digitos				string
 	Bin 				string //que es un bin ???
@@ -38,7 +38,7 @@ type TipoTarjeta struct{
 }
 
 //Estructura que representa un emisor de tarjetas bancarias
-type Emisor struct{
+type EmisorTarjeta struct{
 	Id					string
 	Nombre				string	
 	Activo				bool
